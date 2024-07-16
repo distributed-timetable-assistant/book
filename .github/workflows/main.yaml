@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup update nightly && rustup default nightly
+      - run: rustup target add x86_64-unknown-linux-musl
       - run: cargo build --release --target x86_64-unknown-linux-musl
 
   package:
