@@ -39,7 +39,6 @@ jobs:
         with:
           name: binary_result
           path: target/x86_64-unknown-linux-musl/release/
-      - run: ls -latrh && ls -latrh target/x86_64-unknown-linux-musl/release/
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
