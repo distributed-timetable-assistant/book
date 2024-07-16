@@ -46,12 +46,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: export PROJECT_NAME=${PROJECT_NAME#*\/}
+      - run: export PROJECT_NAME=${PROJECT_NAME##*\/}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: "${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository }}"
+          images: "${{ secrets.DOCKERHUB_USERNAME }}/${{ PROJECT_NAME }}"
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
