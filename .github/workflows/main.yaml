@@ -2,34 +2,20 @@ name: Main
 on: push
 
 jobs:
-  debug-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install the latest nightly of the Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-          target: x86_64-unknown-linux-musl
-      - uses: actions/checkout@v4
-
   test:
     runs-on: ubuntu-latest
-    needs:
-      - debug-build
     steps:
       - uses: actions/checkout@v4
+      - run: rustup update nightly && rustup default nightly
+      - run: cargo build --verbose
+      - run: cargo test --verbose
 
   release-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install the latest nightly of the Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-          target: x86_64-unknown-linux-musl
       - uses: actions/checkout@v4
+      - run: rustup update nightly && rustup default nightly
+      - run: cargo build --release --locked --target x86_64-unknown-linux-musl
 
   package:
     runs-on: ubuntu-latest
