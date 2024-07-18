@@ -73,10 +73,10 @@ jobs:
       - run: |
           sed -i "s/image: backendd\/mizotakhteh.book:.*/image: backendd\/mizotakhteh.book:latest/g" book/base/deployment.yaml
       - run: cat book/base/deployment.yaml
+      - run: git config --global credential.helper "!f() { sleep 1; echo "username=backendd token=${{ github.token }}"; }; f"
       - run: |
           git config --global user.name "Hasan Karimi"
           git config --global user.email "hasankarimi.dev@gmail.com"
           git add .
           git commit -m "update image"
           git push origin
-
