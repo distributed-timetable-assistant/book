@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: "${{ github.repository_owner }}/${{ env.GITOPS_PROJECTNAME }}"
+          repository: "${{ github.repository_owner }}/${{ env.GITOPS_PROJECT_NAME }}"
           token: ${{ secrets.GIT_TOKEN }}
       - run: |
           sed -i "s/(image:.*\n.*- name: ${{ github.repository_owner }}\/${{ env.DOCKER_NAME }}.*\n.*newTag: ).*/${{ github.ref_name }}/g" \
