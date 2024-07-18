@@ -4,7 +4,7 @@ on: push
 env:
   GITOPS_PROJECT_NAME: gitops
   PROJECT_NAME: book
-  DOCKER_NAME: mizotakhteh.${{ env.PROJECT_NAME }}
+  DOCKER_NAME: mizotakhteh.book
 
 jobs:
   test:
