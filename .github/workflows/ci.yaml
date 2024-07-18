@@ -1,6 +1,11 @@
 name: CI
 on: push
 
+env:
+  GITOPS_PROJECT_NAME: gitops
+  PROJECT_NAME: book
+  DOCKER_NAME: mizotakhteh.${{ env.PROJECT_NAME }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -22,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: binary_result
-          path: target/x86_64-unknown-linux-musl/release/book
+          path: target/x86_64-unknown-linux-musl/release/${{ env.PROJECT_NAME }}
           retention-days: 1
 
   package:
@@ -39,18 +44,17 @@ jobs:
         with:
           name: binary_result
           path: target/x86_64-unknown-linux-musl/release/
-      - run: chmod +x target/x86_64-unknown-linux-musl/release/book
+      - run: chmod +x target/x86_64-unknown-linux-musl/release/${{ env.PROJECT_NAME }}
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: echo PROJECT_NAME=${GITHUB_REPOSITORY//\//.} >> $GITHUB_ENV
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.PROJECT_NAME }}"
+          images: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
@@ -68,14 +72,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/gitops
+          repository: "${{ github.repository_owner }}/${{ env.GITOPS_PROJECTNAME }}"
           token: ${{ secrets.GIT_TOKEN }}
-      - run: ls -latrh
       - run: |
-          sed -i "s/image: backendd\/mizotakhteh.book:.*/image: backendd\/mizotakhteh.book:${{ github.ref_name }}/g" book/base/deployment.yaml
+          sed -i "s/(image:.*\n.*- name: ${{ github.repository_owner }}\/${{ env.DOCKER_NAME }}.*\n.*newTag: ).*/${{ github.ref_name }}/g" \
+            ${{ env.PROJECT_NAME }}/overlay/dev/Kustomization.yaml
       - run: |
           git config --global user.name "Hasan Karimi"
           git config --global user.email "hasankarimi.dev@gmail.com"
           git add .
-          git commit -m "update image"
+          git commit -m "ci(${{ env.PROJECT_NAME }}): update image with tag=(${{ github.ref_name }} )"
           git push origin
