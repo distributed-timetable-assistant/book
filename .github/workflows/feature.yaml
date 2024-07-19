@@ -1,0 +1,18 @@
+name: CI
+on:
+  push:
+    branches-ignore:
+      - dev
+      - master
+      - prod
+    paths-ignore:
+      - *
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup update nightly && rustup default nightly
+      - run: cargo build --verbose
+      - run: cargo test --verbose

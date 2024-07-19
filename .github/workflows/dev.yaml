@@ -1,5 +1,8 @@
 name: Dev Pipeline
-on: push
+on:
+  push:
+    branches:
+      - dev
 
 env:
   GITOPS_PROJECT_NAME: gitops
