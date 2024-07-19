@@ -77,6 +77,7 @@ jobs:
       - run: |
           sed -i "s/(images:.*\n.*- name: ${{ github.repository_owner }}\/${{ env.DOCKER_NAME }}.*\n.*newTag: ).*/${{ github.ref_name }}/g" \
             ${{ env.PROJECT_NAME }}/overlays/dev/kustomization.yaml
+          cat ${{ env.PROJECT_NAME }}/overlays/dev/kustomization.yaml
       - run: |
           git config --global user.name "Hasan Karimi"
           git config --global user.email "hasankarimi.dev@gmail.com"
