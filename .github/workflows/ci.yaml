@@ -77,9 +77,11 @@ jobs:
       - run: |
           sed -i "/^ *- name: ${{ secrets.DOCKERHUB_USERNAME }}\/${{ env.DOCKER_NAME }} *$/,/^ *newTag: .*/ s/\(newTag: \).*/\1${{ github.ref_name }}/g" \
             ${{ env.PROJECT_NAME }}/overlays/dev/kustomization.yaml
-      - run: |
+      - name: Git config
+        run: |
           git config --global user.name "Hasan Karimi"
           git config --global user.email "hasankarimi.dev@gmail.com"
-          git add .
-          git commit -m "ci(${{ env.PROJECT_NAME }}): update image with tag=(${{ github.ref_name }} )"
-          git push origin
+      - name: Git commit
+        run: |
+          git commit -am "ci(${{ env.PROJECT_NAME }}): update image with tag=(${{ github.ref_name }})" || true
+      - run: git push origin
