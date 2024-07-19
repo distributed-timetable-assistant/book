@@ -76,7 +76,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
       - run: |
           sed -i "s/(image:.*\n.*- name: ${{ github.repository_owner }}\/${{ env.DOCKER_NAME }}.*\n.*newTag: ).*/${{ github.ref_name }}/g" \
-            ${{ env.PROJECT_NAME }}/overlay/dev/Kustomization.yaml
+            ${{ env.PROJECT_NAME }}/overlays/dev/Kustomization.yaml
       - run: |
           git config --global user.name "Hasan Karimi"
           git config --global user.email "hasankarimi.dev@gmail.com"
