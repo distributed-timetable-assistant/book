@@ -39,6 +39,9 @@ jobs:
       docker-image-tag: ${{ steps.meta.outputs.version }}
       docker-image-name: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
     steps:
+      - run: echo ${{ steps.meta.outputs.tags }}
+      - run: echo ${{ steps.meta.outputs.version }}
+      - run: echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -69,6 +72,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - run: echo ${{ steps.meta.outputs.tags }}
+      - run: echo ${{ steps.meta.outputs.version }}
+      - run: echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
 
   deploy:
     runs-on: ubuntu-latest
