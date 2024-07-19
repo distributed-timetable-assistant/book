@@ -57,7 +57,8 @@ jobs:
           images: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
           tags: |
             type=sha,prefix=dev-,suffix=,format=short
-      - run: echo ${{ steps.meta.outputs.tags }}
+      - run: echo ${{ steps.meta.outputs }}
+      - run: echo ${{ github }}
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
@@ -66,6 +67,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+    outputs:
+      image-ref: ${{ steps.meta.outputs.tags }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -73,6 +76,7 @@ jobs:
       - test
       - package
     steps:
+      - run: echo ${{ needs }}
       - uses: actions/checkout@v4
         with:
           repository: "${{ github.repository_owner }}/${{ env.GITOPS_PROJECT_NAME }}"
