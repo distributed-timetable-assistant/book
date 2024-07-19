@@ -5,7 +5,7 @@ on:
       - dev
       - master
       - prod
-    paths-ignore:
+    tags-ignore:
       - *
 
 jobs:
