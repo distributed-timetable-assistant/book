@@ -1,4 +1,4 @@
-name: CI
+name: Dev Pipeline
 on: push
 
 env:
@@ -57,7 +57,7 @@ jobs:
           images: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
           tags: |
             type=sha,prefix=dev-,suffix=,format=short
-      - run: echo ${{ steps.meta.outputs }}
+      - run: echo ${{ steps.meta.outputs.version }}
       - run: echo ${{ github }}
       - name: Build and push Docker image
         id: push
@@ -68,7 +68,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
     outputs:
-      image-ref: ${{ steps.meta.outputs.tags }}
+      image: ${{ steps.meta.outputs.tags }}
+      image-name: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
+      image-tag: ${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -76,13 +78,12 @@ jobs:
       - test
       - package
     steps:
-      - run: echo ${{ needs }}
       - uses: actions/checkout@v4
         with:
           repository: "${{ github.repository_owner }}/${{ env.GITOPS_PROJECT_NAME }}"
           token: ${{ secrets.GIT_TOKEN }}
       - run: |
-          sed -i "/^ *- name: ${{ secrets.DOCKERHUB_USERNAME }}\/${{ env.DOCKER_NAME }} *$/,/^ *newTag: .*/ s/\(newTag: \).*/\1${{ github.ref_name }}/g" \
+          sed -i "/^ *- name: ${{ needs.package.outputs.image-name }} *$/,/^ *newTag: .*/ s/\(newTag: \).*/\1${{ needs.package.outputs.image-tag }}/g" \
             ${{ env.PROJECT_NAME }}/overlays/dev/kustomization.yaml
       - name: Git config
         run: |
@@ -90,5 +91,5 @@ jobs:
           git config --global user.email "hasankarimi.dev@gmail.com"
       - name: Git commit
         run: |
-          git commit -am "ci(${{ env.PROJECT_NAME }}): update image with tag=(${{ github.ref_name }})" || true
+          git commit -am "ci(${{ env.PROJECT_NAME }}): update image with tag=(${{ needs.package.outputs.image-tag }})" || true
       - run: git push origin
