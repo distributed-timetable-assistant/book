@@ -36,8 +36,8 @@ jobs:
       - release-build
     outputs:
       docker-image: ${{ steps.meta.outputs.tags }}
-      docker-image-name: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
       docker-image-tag: ${{ steps.meta.outputs.version }}
+      docker-image-name: "${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_NAME }}"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -84,7 +84,7 @@ jobs:
       - run: echo ${{ needs.package.outputs.docker-image-name }}
       - run: echo ${{ needs.package.outputs.docker-image-tag }}
       - run: |
-          sed -i "/^ *- name: ${{ needs.package.outputs.image-name }} *$/,/^ *newTag: .*/ s/\(newTag: \).*/\1${{ needs.package.outputs.image-tag }}/g" \
+          sed -i "/^ *- name: ${{ needs.package.outputs.docker-image-name }} *$/,/^ *newTag: .*/ s/\(newTag: \).*/\1${{ needs.package.outputs.docker-image-tag }}/g" \
             ${{ env.PROJECT_NAME }}/overlays/dev/kustomization.yaml
       - name: Git config
         run: |
@@ -92,5 +92,5 @@ jobs:
           git config --global user.email "hasankarimi.dev@gmail.com"
       - name: Git commit
         run: |
-          git commit -am "ci(${{ env.PROJECT_NAME }}): update image with tag=(${{ needs.package.outputs.image-tag }})" || true
+          git commit -am "ci(${{ env.PROJECT_NAME }}): update image with tag=(${{ needs.package.outputs.docker-image-tag }})" || true
       - run: git push origin
